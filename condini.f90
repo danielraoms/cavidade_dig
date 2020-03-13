@@ -161,6 +161,8 @@ call cpu_time(start)
 	!determinando o tempo máximo de simulação para obter a cavidade 
 	maxtime_cav = t + 100000
 
+	tmax_u = 300000
+
 	write(*,*) "Dados da CI puxados."
 	
 !**********************************************************************************************************************************************************************************************
@@ -224,6 +226,7 @@ call cpu_time(start)
 	!2. possuindo o valor da espessura do fundo da cavidade até o fundo do recipiente (espessura_bed), DADO 
 	!3. possuindo o valor da espessura horizontal para minimizar influência da rugosidade da parede (espessura_parede), DADO
 	!cava uma região a partir da condição inicial
+	write(*,*) "bla2", highest_central_line, flag_digtype
 	call cavar_cratera(highest_central_line, espessura_bed, espessura_parede, flag_dig, aspect_ratio,&
 			   qtde_cels_cav, N_restante, flag_digtype) 
 
@@ -240,7 +243,7 @@ call cpu_time(start)
 
 	!SCHEME PARA UNIFORMIZAÇÃO DA CRATERA	
 	!loop do tempo 
-31	DO cont = floor(t/dt), 300000	
+31	DO cont = floor(t/dt), tmax_u	
 		!write(*,*) "Dentro loop tempo - uniformização", cont
 
 		!calcula as energias do sistema no tempo atual 
@@ -445,6 +448,12 @@ call cpu_time(start)
 
 END DO
 
+	write(*,*) "Equilíbrio (uniformização da CI):", t, kinetic, rotational_en
+					
+	!A CI foi uniformizada, pule para a obtenção da cavidade
+	flag_digtype = 0 !mudando flag_digtype para scheme a partir da uniformização da cratera
+	go to 30
+
 	!determinando percentual de partículas que foram cavadas com relação ao total de partículas na CI (para recalcular as tolerâncias de energia)
 	percent_digged = N_restante/N
 
@@ -452,7 +461,7 @@ END DO
 	write(*,*) "Evoluindo um pouco a cavidade..."
 	!evoluindo a cavidade em um passo de tempo 
 	!loop do tempo 
-32	DO cont = 300000, 300000 + 1000	
+32	DO cont = tmax_u, tmax_u + 1000	
 		!write(*,*) "Dentro loop tempo - uniformização", cont
 
 		!calcula as energias do sistema no tempo atual 

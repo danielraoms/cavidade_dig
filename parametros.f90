@@ -47,6 +47,7 @@ module parametros
 	double precision :: aspect_ratio !razão de aspecto da cavidade
 	double precision :: h_infty_evol !altura máxima da coluna/cratera
 	integer :: N_cavidade 		!número de partículas presentes na cavidade
+	integer :: tmax_u	!tempo máximo para uniformização da cratera
 
 	!lista de verlet
 	integer ::  maxIxcell, maxIycell	    											 !número máximo de células na lista de Verlet

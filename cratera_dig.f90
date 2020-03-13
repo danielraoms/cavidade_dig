@@ -100,6 +100,7 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 			L = L_comp 				!a largura da cavidade é igual à largura da cavidade prevista
 			H = L					!razão de aspecto é igual a 1.0
 			aux_1 = 3*H + 2 + e_parede		!valor auxiliar que é igual a 3 vezes o comprimento da cavidade + colunas das paredes esq. e dir. + 2 vezes a espessura horizontal
+			cutoff_up = 0
 		!se H_comp < L_comp, cave em função do menor, H_comp	
 		else if (H_comp .lt. L_comp) then
 			H = H_comp				!o comprimento da cavidade é igual ao comprimento da cavidade previsto

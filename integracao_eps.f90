@@ -277,11 +277,11 @@ subroutine salva_eps(ttwrite,yplaca,parts,parede,part_raio,part_pos_x,part_pos_y
 
   !escreva o "1" no eixo y
     write(210,*) "/Arial findfont"
-    write(210,*) "16 scalefont"
+    write(210,*) "20 scalefont"
     write(210,*) "setfont"
     write(210,110) 0.0, 0.0, 0.0
     write(210,*) ""
-    write(210,108) int (scale*(part_pos_x(1) - 0.12)), int(scale*(part_pos_y(bw - 1 + bw/2) - 0.01))
+    write(210,108) int (scale*(part_pos_x(1) - 0.12)), int(scale*(part_pos_x(bw) - 0.01))
     write(210,*) "(1) show"
 
   !escreva o tempo atual acima do recipiente

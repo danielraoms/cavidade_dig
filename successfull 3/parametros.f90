@@ -92,7 +92,6 @@ module parametros
 	double precision, allocatable, dimension (:,:) :: packing_fraction 		!packing fraction de cada célula
 	double precision, allocatable, dimension (:) :: highest_height			!valor da altura máxima da partícula mais alta de cada coluna de células
 	integer, allocatable, dimension (:) :: aux_location 										!retorna a linha das células de Verlet que contém a partícula com altura máxima para uma coluna de Verlet fixada, para cada coluna de células de Verlet
-	integer :: cont_dig_end								!número total de partículas restantes no sistema
 	
 	!para cálculo das forças
 	double precision :: Fx_elastica, Fy_elastica  									!força normal elástica nas posições x e y

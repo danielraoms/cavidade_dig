@@ -684,35 +684,30 @@ END DO
 	!arquivo para quantidades da condição inicial
 	write(cavidade, "(a,i0,a)") "cavidade.dat"
 
+	!escreve num arquivo .dat os parâmetros da cavidade
+	open (unit = 100, file=trim(dados_cavidade), status = "unknown")
+
 	open (unit = 101, file=trim(cavidade), status = "unknown")
+
+	write(100, *) cont*dt,N_restante,N_cavidade,bw,lw,rw,xinicial,yinicial,raiomed,raiomax,dt,g,paredes,&
+		      maxIxcell,maxIycell,gama_n,mi_t,gama_s,mi_roll_1,mi_roll_2, E_young,v_poisson,G_shear
+	write(100,*) " "
+
+	close(unit=100)
 
 	!escreve num arquivo .dat as quantidades das partículas na condição inicial
 	open (unit = 101, file=trim(cavidade), status = "unknown")
 
-
-	cont_dig_end = 0
 	do i = 1, N
-		!salve somente as partículas cavadas
-		if (flag_dig(i) .gt. 0) then
-			cont_dig_end = cont_dig_end + 1
-			write(101,*) r(i),m(i),inertia(i),xold(i),xnew(i),vxold(i),vxnew(i),forcax(i),yold(i),ynew(i),&
-		    		    vyold(i),vynew(i),forcay(i),theta_old(i),theta_new(i),omega_old(i),omega_new(i),torque(i)
+		write(101,*) r(i),m(i),inertia(i),xold(i),xnew(i),vxold(i),vxnew(i),forcax(i),yold(i),ynew(i),&
+	    		    vyold(i),vynew(i),forcay(i),theta_old(i),theta_new(i),omega_old(i),omega_new(i),torque(i)
 
-			write(101,*) ""
-		end if
+		write(101,*) ""
 	end do
 
 	close(unit=101)	
 
 
-	!escreve num arquivo .dat os parâmetros da cavidade
-	open (unit = 100, file=trim(dados_cavidade), status = "unknown")
-
-	write(100, *) cont*dt,N_restante,N_cavidade,cont_dig_end,massa_media,bw,lw,rw,xinicial,yinicial,raiomed,&
-		      raiomax,dt,g,paredes,maxIxcell,maxIycell,gama_n,mi_t,gama_s,mi_roll_1,mi_roll_2, E_young,v_poisson,G_shear
-	write(100,*) " "
-
-	close(unit=100)
 
 
 	

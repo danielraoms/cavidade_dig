@@ -96,7 +96,7 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 		if (H_comp .ge. L_comp) then
 			L = L_comp 				!a largura da cavidade é igual à largura da cavidade prevista
 			H = L					!razão de aspecto é igual a 1.0
-			aux_1 = 3*H + 2 + e_parede		!valor auxiliar que é igual a 3 vezes o comprimento da cavidade + colunas das paredes esq. e dir. + 2 vezes a espessura horizontal
+			aux_1 = 3*H + 2 + 2*e_parede		!valor auxiliar que é igual a 3 vezes o comprimento da cavidade + colunas das paredes esq. e dir. + 2 vezes a espessura horizontal
 			cutoff_up = 0
 		!se H_comp < L_comp, cave em função do menor, H_comp	
 		else if (H_comp .lt. L_comp) then
@@ -138,6 +138,7 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 
 	!Razão de aspecto MAIOR que 1.0
 	else if (aspect_ratio_dummy .gt. 1.0d0) then
+		write(*,*) "aspect ratio > 1.0"
 
 		!define H primeiro, pois será maior - esse scheme busca o melhor valor de L para o valor de H especificado
 		H_real = (bw - 2 - 2*e_parede)/3.0
@@ -152,8 +153,12 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 		L = floor(H/aspect_ratio_dummy)
 		aux_2 = altura_CI - e_bed
 
+		write(*,*) "L, aux_2", L, aux_2, altura_CI, e_bed
+		read(*,*)
+
 		!se a largura do recipiente é
 25		if (aux_2 .ge. L) then
+			write(*,*) "aux_2 >= L"
 			cutoff_up = aux_2 - L
  
 			!se não há corte a ser feito OU se o corte já foi efetuado, apenas continue			
@@ -185,18 +190,23 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 				flag_digtype_dummy = 1
 				go to 23		
 			end if			
+
 		!se a largura acima de e_bed é menor do que aux_1		
 		else if (aux_2 .lt. L) then
-			!decremente o valor de H atual até que caiba a largura altura_CI - e_bed
-			do while (bw .lt. aux_1)
+			write(*,*) "aux_2 < L", aux_2
 
-				write(*,*) "bla", aux_1
+			!decremente o valor de H atual até que caiba a largura altura_CI - e_bed
+			do while (aux_2 .lt. L)
+
+				write(*,*) "aux_2 < L loop", aux_2, L
 			
 				H = H - 1
 				L = floor(H/aspect_ratio_dummy) 	!recalculando comprimento da cavidade
 
-				aux_2 = e_bed + L			!recalculando aux_2 para reiteração
+				write(*,*) "H, L recalculados", H, L
+
 			end do
+			read(*,*)
 			go to 25	!volte para o condicional que checa se o comprimento do recipiente é igual ou maior do que aux_1 - ela vai ser satisfeita
 					!P.S.: se não for satisfeita, há uma inconsistência! Checar essa inconsistência!			
 		end if
@@ -271,9 +281,9 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 
 
 26	if (flag_digtype_dummy .eq. 0) then
-  		N_resto = N - contdig 
+  		N_resto = N_resto - contdig 
 	else
-		N_resto = N_resto - contdig
+		N_resto = N - contdig
 	end if
 	write(*,*) "26", N_resto, contdig, contdig_2
 

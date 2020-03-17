@@ -86,7 +86,6 @@ call cpu_time(start)
 	open(unit=105, file = trim(CI_dados), status = "old")
 
 	!LENDO DADOS DA CI
-	!read(105,*)  t,N,bw,lw,rw,xinicial,yinicial,raiomed,raiomax,dt,gama_n,mi_t,gama_s,mi_roll_1
 	read(105,*) t,N,bw,lw,rw,xinicial,yinicial,raiomed,raiomax,dt,g,paredes,maxIxcell,maxIycell,&
 	  	    gama_n,mi_t,gama_s,mi_roll_1,mi_roll_2, E_young_p, v_poisson_p, G_shear_p
 
@@ -122,9 +121,6 @@ call cpu_time(start)
 
 	!LENDO CI (PARTÍCULAS)
 	do i = 1, N
-		!read(106,*)	r(i),m(i),inertia(i),xold(i),xnew(i),vxold(i),vxnew(i),forcax(i),yold(i),ynew(i),&
-				!vyold(i),vynew(i),forcay(i),theta_old(i),theta_new(i),omega_old(i),omega_new(i),torque(i),&
-				!E_young(i),v_poisson(i),G_shear(i)
 		read(106,*) r(i),m(i),inertia(i),xold(i),xnew(i),vxold(i),vxnew(i),forcax(i),yold(i),ynew(i),&
 			    vyold(i),vynew(i),forcay(i),theta_old(i),theta_new(i),omega_old(i),omega_new(i),torque(i)
 	end do	
@@ -241,7 +237,6 @@ call cpu_time(start)
 	!SCHEME PARA UNIFORMIZAÇÃO DA CRATERA	
 	!loop do tempo 
 31	DO cont = floor(t/dt), tmax_u	
-		!write(*,*) "Dentro loop tempo - uniformização", cont
 
 		!calcula as energias do sistema no tempo atual 
 		call energias(flag_dig)
@@ -261,7 +256,6 @@ call cpu_time(start)
 		end if
 
 		if (mod(cont,contmodeps) .eq. 0) then 
-			!write(*,*) "cont", cont
 			!itere enquanto (kinetic .LT. toleranciastop)
 			if ((kinetic .LT. toleranciakin*percent_digged) .AND. (rotational_en .LT. toleranciarot*percent_digged)&
 										.AND. (cont .GT. maxtime_cav)) then
@@ -290,23 +284,15 @@ call cpu_time(start)
 		!reinicia a lista de Verlet e reposiciona as partículas nas células
 		call lista_verlet(tdl) 
 
-		!write(*,*) "depois de refazer lista de Verlet"
-		
 		!itere todas as células interiores do sistema
 		do b = 1, maxIxcell
 		do a = 1, maxIycell
 
-			!write(*,*) "dentro 1"
-			!read(*,*)
-		
 			!tome a partícula head da célula teste (a,b) (Head Of Cell, Hoc; Tête de Liste, TDL) como a partícula teste
 			p = tdl(a,b)
 
 			!itere todas as partículas da célula teste (a,b) 
 			do while (p .GT. 0)
-
-				!write(*,*) "dentro 2"
-				!read(*,*)
 
 				!compare a célula atual (a,b) com ela mesma e com as células adjacentes
 				do j = b-1, b+1
@@ -323,32 +309,18 @@ call cpu_time(start)
 				!tome a partícula head da célula (i,j) como a partícula comparada
 				q = tdl(i,j)		
 					
-					!write(*,*) "dentro 3"
-					!read(*,*)
-
 					!compare todas as partículas da célula comparada (i,j) 
 					do while (q .NE. 0)
-
-						!write(*,*) "dentro 4"
-						!read(*,*)
 
 						!não calcule as quantidades das partículas da fronteira
 						if (p .gt. paredes) then
 
 						if (((flag_dig(p) .eq. 1) .AND. (flag_dig(q) .eq. 1)) .OR.& !duas partículas móveis não-cavadas
 						   ((flag_dig(p) .eq. 1) .AND. (q .le. paredes)))     then  !uma partícula móvel e uma da parede
-						   !((p .le. paredes) .AND. (flag_dig(q) .eq. 1))) then	    !uma partícula da parede e uma partícula móvel
-
 							
-						!write(*,*) "dentro 5"
-						!read(*,*)
-
 						!não compare a partícula teste com ela mesma
 						!critério de colisão entre a partícula teste (p) e a partícula comparada (q)
 						if ((p.ne.q).AND.((((xnew(p)-xnew(q))**2.0d0)+(ynew(p)-ynew(q))**2.0d0).LE.((r(p)+r(q))**2.0))) then
-
-							!write(*,*) "dentro 6"
-							!read(*,*)
 
 							detector_new(p,q) = 1
 			
@@ -364,11 +336,7 @@ call cpu_time(start)
 								!mantenha dx_history_x(p,q) e dx_history_y(p,q) unchanged
 							end if
 								 
-							!if ((p .le. paredes) .and. (q .le. paredes)) then
-								!não calcule a força resultante para qualquer partícula da parede
-							!	continue
-							!else
-							  !calcule as forças 
+							!calcule as forças 
 							call all_forces(gama_n,mi_t,gama_s,mi_roll,E_young(p),E_young(q),v_poisson(p),v_poisson(q),&
 										G_shear(p),G_shear(q),m(p),m(q),r(p),r(q),xold(p),xold(q),yold(p),yold(q),&
 										vxold(p),vxold(p),vyold(p),vyold(q),omega_old(p),omega_old(q),Fx_elastica,Fy_elastica,&
@@ -382,11 +350,6 @@ call cpu_time(start)
 							forcax(p) = forcax(p) + Fx_elastica + Fx_viscosa + Fat_x
 							forcay(p) = forcay(p) + Fy_elastica + Fy_viscosa + Fat_y
 							torque(p) = torque(p) - sinal_vrel*(Fs_tangencial)*r(p) + T_rolling
-
-							!write(*,*) "p", p, sinal_vrel, Fs_tangencial, r(p), T_rolling, torque(p)
-
-							!write(*,*) "p", p, Fx_elastica, Fx_viscosa, Fat_x, Fy_elastica,&
-								       ! Fy_viscosa, Fat_y, Fs_tangencial
 
 							!força elástica resultante na partícula p
 							F_elastica(p) = F_elastica(p) + dsqrt(Fx_elastica**2.0d0 + Fy_elastica**2.0d0)
@@ -424,8 +387,6 @@ call cpu_time(start)
 		end do !fecha double loop de células teste (a,b)
 		end do
 
-		!write(*,*) "depois loop partículas"
-
 	!evolui no tempo as posições, velocidades e ângulos das partículas
 	call integracao_verlet_cratera()
 
@@ -439,9 +400,6 @@ call cpu_time(start)
 		call salva_eps_cratera(int(cont/contmodeps),ywall,N,paredes,r,xnew,ynew,0,theta_new,F_elastica,velocidade_total,flag_dig)
 	
 	end if
-
-		!write(*,*) "depois eps"
-		!read(*,*) 
 
 END DO
 
@@ -508,23 +466,15 @@ END DO
 		!reinicia a lista de Verlet e reposiciona as partículas nas células
 		call lista_verlet(tdl) 
 
-		!write(*,*) "depois de refazer lista de Verlet"
-		
 		!itere todas as células interiores do sistema
 		do b = 1, maxIxcell
 		do a = 1, maxIycell
 
-			!write(*,*) "dentro 1"
-			!read(*,*)
-		
 			!tome a partícula head da célula teste (a,b) (Head Of Cell, Hoc; Tête de Liste, TDL) como a partícula teste
 			p = tdl(a,b)
 
 			!itere todas as partículas da célula teste (a,b) 
 			do while (p .GT. 0)
-
-				!write(*,*) "dentro 2"
-				!read(*,*)
 
 				!compare a célula atual (a,b) com ela mesma e com as células adjacentes
 				do j = b-1, b+1
@@ -541,14 +491,8 @@ END DO
 				!tome a partícula head da célula (i,j) como a partícula comparada
 				q = tdl(i,j)		
 					
-					!write(*,*) "dentro 3"
-					!read(*,*)
-
 					!compare todas as partículas da célula comparada (i,j) 
 					do while (q .NE. 0)
-
-						!write(*,*) "dentro 4"
-						!read(*,*)
 
 						!não calcule as quantidades das partículas da fronteira
 						if (p .gt. paredes) then
@@ -557,16 +501,10 @@ END DO
 						   ((flag_dig(p) .eq. 1) .AND. (q .le. paredes)))     then  !uma partícula móvel e uma da parede
 						   !((p .le. paredes) .AND. (flag_dig(q) .eq. 1))) then	    !uma partícula da parede e uma partícula móvel
 
-							
-						!write(*,*) "dentro 5"
-						!read(*,*)
 
 						!não compare a partícula teste com ela mesma
 						!critério de colisão entre a partícula teste (p) e a partícula comparada (q)
 						if ((p.ne.q).AND.((((xnew(p)-xnew(q))**2.0d0)+(ynew(p)-ynew(q))**2.0d0).LE.((r(p)+r(q))**2.0))) then
-
-							!write(*,*) "dentro 6"
-							!read(*,*)
 
 							detector_new(p,q) = 1
 			
@@ -582,10 +520,6 @@ END DO
 								!mantenha dx_history_x(p,q) e dx_history_y(p,q) unchanged
 							end if
 								 
-							!if ((p .le. paredes) .and. (q .le. paredes)) then
-								!não calcule a força resultante para qualquer partícula da parede
-							!	continue
-							!else
 							  !calcule as forças 
 							call all_forces(gama_n,mi_t,gama_s,mi_roll,E_young(p),E_young(q),v_poisson(p),v_poisson(q),&
 										G_shear(p),G_shear(q),m(p),m(q),r(p),r(q),xold(p),xold(q),yold(p),yold(q),&
@@ -593,18 +527,12 @@ END DO
 										Fx_viscosa,Fy_viscosa,Fat_x,Fat_y,Fs_tangencial,T_rolling,ndx,ndy,&
 										dx_history_x(p,q),dx_history_y(p,q),sinal_vrel)
 
-							!end if
 
 							!soma as contribuições de força que a partícula comparada (q) realiza na partícula teste (p) à força total 
 							!que a partícula teste (p) sofre de todas suas partículas vizinhas
 							forcax(p) = forcax(p) + Fx_elastica + Fx_viscosa + Fat_x
 							forcay(p) = forcay(p) + Fy_elastica + Fy_viscosa + Fat_y
 							torque(p) = torque(p) - sinal_vrel*(Fs_tangencial)*r(p) + T_rolling
-
-							!write(*,*) "p", p, sinal_vrel, Fs_tangencial, r(p), T_rolling, torque(p)
-
-							!write(*,*) "p", p, Fx_elastica, Fx_viscosa, Fat_x, Fy_elastica,&
-								       ! Fy_viscosa, Fat_y, Fs_tangencial
 
 							!força elástica resultante na partícula p
 							F_elastica(p) = F_elastica(p) + dsqrt(Fx_elastica**2.0d0 + Fy_elastica**2.0d0)
@@ -642,8 +570,6 @@ END DO
 		end do !fecha double loop de células teste (a,b)
 		end do
 
-		!write(*,*) "depois loop partículas"
-
 	!evolui no tempo as posições, velocidades e ângulos das partículas
 	call integracao_verlet_cratera()
 
@@ -654,9 +580,6 @@ END DO
 
 		!salvando imagem .eps com configuração do sistema no passo de tempo atual
 		call salva_eps_cratera(int(cont/contmodeps),ywall,N,paredes,r,xnew,ynew,0,theta_new,F_elastica,velocidade_total,flag_dig)
-
-		!write(*,*) "depois eps"
-		!read(*,*) 
 
 END DO
 
@@ -675,17 +598,10 @@ END DO
 	massa_media = massa_media/N_restante
 
 	!arquivos .dat com dados das partículas para evolução do colapso.
-	!arquivo para dados da cavidade obtida
-	write(dados_cavidade, "(a,i0,a)") "dados_out_cavidade.dat"
-	
-	!arquivo para quantidades da condição inicial
+	!arquivo para quantidades da cavidade obtida
 	write(cavidade, "(a,i0,a)") "cavidade.dat"
 
 	open (unit = 101, file=trim(cavidade), status = "unknown")
-
-	!escreve num arquivo .dat as quantidades das partículas na condição inicial
-	open (unit = 101, file=trim(cavidade), status = "unknown")
-
 
 	cont_dig_end = 0
 	do i = 1, N
@@ -702,14 +618,17 @@ END DO
 	close(unit=101)	
 
 
+	!arquivo para dados da cavidade obtida
+	write(dados_cavidade_out, "(a,i0,a)") "dados_cavidade_out.dat"
 	!escreve num arquivo .dat os parâmetros da cavidade
-	open (unit = 100, file=trim(dados_cavidade), status = "unknown")
 
-	write(100, *) cont*dt,N_restante,N_cavidade,cont_dig_end,massa_media,bw,lw,rw,xinicial,yinicial,raiomed,&
-		      raiomax,dt,g,paredes,maxIxcell,maxIycell,gama_n,mi_t,gama_s,mi_roll_1,mi_roll_2, E_young,v_poisson,G_shear
-	write(100,*) " "
+	open (unit = 103, file=trim(dados_cavidade_out), status = "unknown")
 
-	close(unit=100)
+	write(103, *) cont*dt,(N-cont_dig_end),cont_dig_end,massa_media,bw,lw,rw,xinicial,yinicial,raiomed,&
+		      raiomax,dt,g,paredes,maxIxcell,maxIycell,gama_n,mi_t,gama_s,mi_roll_1,mi_roll_2, E_young_p,v_poisson_p,G_shear_p
+	write(103,*) " "
+
+	close(unit=103)
 
 
 	

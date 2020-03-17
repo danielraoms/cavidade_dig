@@ -50,8 +50,6 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 		L = altura_CI - e_bed 				!a largura da cavidade é igual à espessura da bed subtraída da altura da CI 
 		H = floor(aspect_ratio_dummy*L) 		!o comprimento da cavidade é igual à razão de aspecto multiplicado pela largura da cavidade
 		aux_1 = 3*H + 2 + 2*e_parede			!valor auxiliar que é igual a 3 vezes o comprimento da cavidade + colunas das paredes esq. e dir. +  2 vezes a espessura horizontal
-
-		write(*,*) "L, H, aux_1", L, H, aux_1
 		
 		!se o comprimento do recipiente é igual ou maior do que aux_1
 22		if (bw .ge. aux_1) then
@@ -64,8 +62,6 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 				!vestigial = 1			
 			end if
 
-			write(*,*) "aux_2", aux_2, bw
-
 			!calculando a posição da coluna do ponto A
 			pt_A = aux_2
 			!calculando a posição da coluna do ponto A
@@ -76,7 +72,6 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 			pt_D = pt_C + H
 
 			write(*,*) "pontos", pt_A, pt_B, pt_C, pt_D, H
-			read(*,*)
 			flag_digtype_dummy = 0
 			go to 23
 
@@ -146,7 +141,6 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 		!se o corte ainda não foi realizado, pule para o momento em que definimos flag_dig - em que cavamos partículas propriamente
 		else if (cutoff_up .gt. 0) then
 			flag_digtype_dummy = 1
-			write(*,*) "indicating cutoff type", flag_digtype_dummy
 			go to 23		
 		end if
 
@@ -166,9 +160,6 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 
 		L = floor(H/aspect_ratio_dummy)
 		aux_2 = altura_CI - e_bed
-
-		write(*,*) "L, aux_2", L, aux_2, altura_CI, e_bed
-		read(*,*)
 
 		!se a largura do recipiente é
 25		if (aux_2 .ge. L) then
@@ -213,8 +204,6 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 
 			!decremente o valor de H atual até que caiba a largura altura_CI - e_bed
 			do while (aux_2 .lt. L)
-
-				write(*,*) "aux_2 < L loop", aux_2, L
 			
 				H = H - 1
 				L = floor(H/aspect_ratio_dummy) 	!recalculando comprimento da cavidade
@@ -222,7 +211,6 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 				write(*,*) "H, L recalculados", H, L
 
 			end do
-			read(*,*)
 			go to 25	!volte para o condicional que checa se o comprimento do recipiente é igual ou maior do que aux_1 - ela vai ser satisfeita
 					!P.S.: se não for satisfeita, há uma inconsistência! Checar essa inconsistência!			
 		end if
@@ -235,13 +223,10 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 		write(*,*) "scheme for cutoff flag = 1", flag_digtype_dummy, cutoff_up
 		do j = 1, N_resto
 			!determinando a célula de Verlet para a partícula j
-			!Ixcell_hole = int((xold(j) - (xinicial-raiomax))/(Rcell) + 1) 
 			Iycell_hole = int((yold(j) - (yinicial-raiomax))/(Rcell)) + 1 
-				!write(*,*) "j, Iycell_hole", j, Iycell_hole
 
 			!se a linha de células correspondente à partícula j é maior do que o cutoff_up, cave!
 			if (Iycell_hole .gt. (altura_CI - cutoff_up)) then
-				!write(*,*) "b, j, Iycell_hole", j, Iycell_hole
 				flag_dummy(j) = -1
 				contdig = contdig + 1	
 			end if
@@ -269,7 +254,6 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 			!E 2. se o número da coluna de células é menor que pt_C
 			!E 3. se o número da linha de células é maior que e_bed
 			if ((Ixcell_hole .gt. pt_B) .AND. (Ixcell_hole .lt. pt_C) .AND. (Iycell_hole .gt. e_bed)) then
-				write(*,*) "j", j, Ixcell_hole, Iycell_hole
 				flag_dummy(j) = -1
 				contdig = contdig + 1
 			end if

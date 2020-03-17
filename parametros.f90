@@ -9,7 +9,7 @@ module parametros
 	character(100) :: validation_friction
 	character(100) :: normalforces, posicoes_val, historia_atrito, cratera_surface, cratera_evolucao, cratera_post, altura_maxima !arquivos .dat
 	character(100) :: CI_dados, CI_file				!arquivos .dat --> puxando a CI e dados da cavidade de .dat's preexistentes
-	character(100) :: dados_cavidade, cavidade 			!arquivos .dat --> empurrando dados das partículas e da cavidade 
+	character(100) :: dados_cavidade, cavidade, dados_cavidade_out 	!arquivos .dat --> empurrando dados das partículas e da cavidade 
 
 
 	!parâmetros de entrada 

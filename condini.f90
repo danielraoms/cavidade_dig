@@ -191,8 +191,6 @@ call cpu_time(start)
 		do a = 2, maxIycell-1
 			!tome a partícula head da célula teste (a,central_column) como a partícula teste
 			p = tdl(a,central_column)
-
-			!write(*,*) "bla", p, a, central_column
 	
 			do while (p .gt. 0)
 
@@ -217,7 +215,6 @@ call cpu_time(start)
 		end do
 
 	write(*,*) "highest central line", highest_central, highest_central_line, espessura_bed, espessura_parede
-	read(*,*)
 
 	!salvando imagem .eps com configuração do sistema no passo de tempo atual
 	!call salva_eps_cratera(int(cont/contmodeps),ywall,N,paredes,r,xnew,ynew,0,theta_new,F_elastica,velocidade_total,flag_dig)
@@ -226,7 +223,7 @@ call cpu_time(start)
 	!2. possuindo o valor da espessura do fundo da cavidade até o fundo do recipiente (espessura_bed), DADO 
 	!3. possuindo o valor da espessura horizontal para minimizar influência da rugosidade da parede (espessura_parede), DADO
 	!cava uma região a partir da condição inicial
-	write(*,*) "bla2", highest_central_line, flag_digtype
+	write(*,*) "before dig", highest_central_line, flag_digtype
 	call cavar_cratera(highest_central_line, espessura_bed, espessura_parede, flag_dig, aspect_ratio,&
 			   qtde_cels_cav, N_restante, flag_digtype) 
 

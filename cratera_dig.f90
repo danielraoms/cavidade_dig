@@ -163,6 +163,7 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
  
 			!se não há corte a ser feito OU se o corte já foi efetuado, apenas continue			
 			if (cutoff_up .eq. 0) then 
+				write(*,*) "cutoff_up =", cutoff_up
 				!define o tamanho do bloco a ser separado em degrau/cavidade/degrau - todos com o mesmo comprimento de bloco
 				if (mod((bw - 3*H),2) .eq. 0) then	!caso par
 					aux_2 = (bw - 3*H)/2		
@@ -181,6 +182,7 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 				!calculando a posição da coluna do ponto A
 				pt_D = pt_C + H
 
+				write(*,*) "pontos", pt_A, pt_B, pt_C, pt_D, H				
 
 				flag_digtype_dummy = 0
 				go to 23
@@ -212,16 +214,8 @@ subroutine cavar_cratera(altura_CI, e_bed, e_parede, flag_dummy, aspect_ratio_du
 		end if
 	end if
 
-!	!definindo dimensões da cratera em função das células de Verlet (H da razão de aspecto - comprimento da cratera)
-!	K_1 = int(((bw - 2) - 2*e_parede)/3.0)
-
-!	pt_B = (1 + e_parede) + K_1		!parede esquerda DA CAVIDADE. P.S.: refere-se à COLUNA de células de Verlet
-!	pt_C = pt_B + K_1 			!parede direita DA CAVIDADE. P.S.: refere-se à COLUNA de células de Verlet
-
-!	cutoff_up = K_1 + e_bed  		!delimitação superior DA CAVIDADE - cutoff: todas as partículas acima desta linha de células deve ser cavada. P.S.: refere-se à LINHA de células de Verlet
 
 	!identificando quais partículas serão cavadas
-
 23	if (flag_digtype_dummy .eq. 1) then
 
 		write(*,*) "scheme for cutoff flag = 1", flag_digtype_dummy, cutoff_up
